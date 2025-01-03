@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模拟微信聊天界面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #E5E5E5; /* 整体背景色 */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* 100%高度 */
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #d7d7d7; /* 聊天背景色，稍微深一点 */
+            margin: 10px; /* 调整 margin 以适配小屏 */
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 增加阴影 */
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column; /* 确保新消息在旧消息下方 */
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #007BFF #f4f4f4; /* Firefox */
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px; /* 宽度 */
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #007BFF; /* 滚动条颜色 */
+            border-radius: 10px; /* 圆角 */
+        }
+
+        .chat-message {
+            margin: 5px 0; /* 调整间距 */
+            padding: 10px;
+            border-radius: 15px; /* 圆角 */
+            max-width: 75%; /* 最大宽度 */
+            word-wrap: break-word;
+            display: inline-block; /* 允许自适应宽度 */
+            position: relative; /* 用于定位时间标签 */
+        }
+
+        .chat-message.sent {
+            background-color: rgb(109, 224, 119); /* 发送消息的颜色 */
+            align-self: flex-end; /* 右对齐 */
+        }
+
+        .chat-message.received {
+            background-color: white; /* 回复的消息框背景色 */
+            align-self: flex-start; /* 左对齐 */
+        }
+
+        .timestamp {
+            font-size: 0.7em; /* 调整大小 */
+            color: #999;
+            position: absolute;
+            bottom: -18px; /* 调整位置 */
+            right: 5px; /* 调整位置 */
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background-color: #d7d7d7;
+            border-top: 1px solid #ccc;
+            flex-wrap: wrap; /* 允许换行 */
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 8px; /* 调整padding */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 5px; /* 减小右边距 */
+            outline: none;
+            transition: border-color 0.3s; /* 边框颜色变化 */
+            min-width: 0; /* 允许输入框收缩 */
+        }
+
+        .chat-input input:focus {
+            border: 1px solid #007BFF; /* 聚焦时蓝色边框 */
+        }
+
+        .chat-input button {
+            padding: 8px 10px; /* 缩小按钮大小 */
+            border: none;
+            border-radius: 5px; /* 减小圆角 */
+            background-color: #0b9b12;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s; /* 动画效果 */
+            margin: 5px 0; /* 适配小屏的margin */
+            font-size: 0.9em; /* 调整字体大小 */
+        }
+
+        .chat-input button:hover {
+            background-color: #099b10; /* 悬停效果 */
+        }
+
+        .chat-input button:active {
+            transform: scale(0.95); /* 点击缩小实际效果 */
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .emoji-picker {
+            display: none;
+            position: relative;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 5px; /* 与输入框的间隙 */
+        }
+
+        .emoji {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+        }
+
+        .emoji-picker {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 网格布局 */
+            gap: 10px; /* 列之间的间隙 */
+        }
+
+        /* 放大图片的模态框 */
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        /* 媒体查询：适配手机屏幕 */
+        @media (max-width: 600px) {
+            .chat-input {
+                flex-direction: column; /* 垂直布局 */
+            }
+
+            .chat-input input {
+                margin-right: 0; /* 清除右边距 */
+                margin-bottom: 10px; /* 底部间距 */
+            }
+
+            .chat-input label {
+                margin-left: 0; /* 清除左边距 */
+                margin-bottom: 10px; /* 底部间距 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="请输入消息...">
+            <button id="sendButton">发送</button>
+            <label for="fileInput" style="cursor: pointer; padding: 8px 10px; background-color: #007BFF; border-radius: 5px; color: white; margin-left: 5px; font-size: 0.9em;">上传图片</label>
+            <input type="file" id="fileInput" accept="image/*">
+            <button id="emojiButton" style="margin-left: 5px;">😀</button>
+        </div>
+        <div id="emojiPicker" class="emoji-picker">
+            <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f600.png" alt="😀" class="emoji" data-emoji="😀">
+            <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f604.png" alt="😄" class="emoji" data-emoji="😄">
+            <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f601.png" alt="😁" class="emoji" data-emoji="😁">
+            <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f60d.png" alt="😍" class="emoji" data-emoji="😍">
+            <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f609.png" alt="😉" class="emoji" data-emoji="😉">
+            <!-- 可以继续添加更多表情 -->
+        </div>
+    </div>
+
+    <!-- 放大图片的模态框 -->
+    <div id="imageModal" class="modal">
+        <img id="modalImage" src="" alt="放大图片">
+    </div>
+
+    <script>
+        const sendButton = document.getElementById('sendButton');
+        const messageInput = document.getElementById('messageInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const fileInput = document.getElementById('fileInput');
+        const emojiButton = document.getElementById('emojiButton');
+        const emojiPicker = document.getElementById('emojiPicker');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+
+        // 回车键发送消息
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendButton.click(); // 触发发送按钮的点击事件
+            }
+        });
+
+        sendButton.addEventListener('click', function() {
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                addMessage(messageText, 'sent');
+                messageInput.value = ''; // 发送后清空输入框
+
+                setTimeout(() => {
+                    addMessage('收到您的消息: ' + messageText, 'received');
+                }, 1000); // 1秒后模拟接收回复
+            }
+        });
+
+        fileInput.addEventListener('change', function() {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgMessage = document.createElement('img');
+                    imgMessage.src = e.target.result;
+                    imgMessage.style.maxWidth = '200px'; // 设置图片最大宽度
+                    imgMessage.style.borderRadius = '10px'; // 圆角效果
+                    imgMessage.style.cursor = 'pointer'; // 鼠标悬停时显示为手型
+                    imgMessage.addEventListener('click', function() {
+                        openImageModal(imgMessage.src); // 点击图片放大
+                    });
+                    addImageMessage(imgMessage, 'sent');
+                };
+                reader.readAsDataURL(file); // 读取文件为Data URL
+                fileInput.value = ''; // 清空文件输入框
+            }
+        });
+
+        emojiButton.addEventListener('click', function() {
+            emojiPicker.style.display = emojiPicker.style.display === "none" || emojiPicker.style.display === "" ? "block" : "none";
+        });
+
+        emojiPicker.addEventListener('click', function(event) {
+            if (event.target.classList.contains('emoji')) {
+                const emoji = event.target.getAttribute('data-emoji');
+                addMessage(emoji, 'sent');
+                emojiPicker.style.display = "none"; // 发送后隐藏表情选择器
+            }
+        });
+
+        function addMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', type);
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); // 获取时间戳
+            messageDiv.innerHTML = text + `<div class="timestamp">${timestamp}</div>`; // 添加时间戳
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // 滚动到最新消息
+        }
+
+        function addImageMessage(imageElement, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', type);
+            messageDiv.style.backgroundColor = 'transparent'; // 设置背景为透明
+            messageDiv.appendChild(imageElement);
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); // 获取时间戳
+            messageDiv.innerHTML += `<div class="timestamp">${timestamp}</div>`; // 添加时间戳
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // 滚动到最新消息
+        }
+
+        // 点击图片放大浏览
+        function openImageModal(src) {
+            modalImage.src = src; // 设置模态框中显示的图片
+            imageModal.style.display = "flex"; // 显示模态框
+        }
+
+        // 点击模态框外部关闭放大图片
+        imageModal.addEventListener('click', function() {
+            imageModal.style.display = "none"; // 隐藏模态框
+        });
+    </script>
+</body>
+</html>

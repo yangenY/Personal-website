@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人网站</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4; /* 浅灰色背景 */
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 头部样式 */
+        header {
+            background-image: url(图片\w.PNG); /* 保留风景图片 */
+            background-size: cover;
+            background-position: center;
+            color: rgb(48, 40, 40);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 增加文字阴影 */
+        }
+
+        header p {
+            font-size: 1.2rem;
+            margin: 10px 0 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* 增加文字阴影 */
+        }
+
+        /* 导航栏样式 */
+        nav {
+            background-color: #333;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        nav a:hover {
+            transform: scale(1.1);
+            color: #4a90e2;
+        }
+
+        /* 主要内容区域样式 */
+        .content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white; /* 内容区域使用白色背景 */
+            border-radius: 8px; /* 圆角 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 增加阴影 */
+        }
+
+        .content h2 {
+            color: #4a90e2;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #555; /* 深灰色文字 */
+        }
+
+        /* 项目展示区域样式 */
+        .projects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .project-card {
+            background-color: #ffffff; /* 白色背景 */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            flex: 1 1 calc(33.333% - 40px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .project-card h3 {
+            font-size: 1.5rem;
+            margin: 0 0 10px;
+            color: #333; /* 深灰色标题 */
+        }
+
+        .project-card p {
+            font-size: 1rem;
+            color: #666; /* 灰色文字 */
+        }
+
+        /* 页脚样式 */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .projects {
+                flex-direction: column;
+            }
+
+            .project-card {
+                flex: 1 1 100%;
+            }
+        }
+
+        /* 滚动动画 */
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 1s ease-out;
+        }
+
+        /* 逐字显示效果 */
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid #4a90e2;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink-caret {
+            from, to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: #4a90e2;
+            }
+        }
+        a {
+	text-decoration: none;
+	}
+    a:hover{
+	text-decoration:none;
+	}
+
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header>
+        <h1 class="typewriter">欢迎来到我的个人网站</h1>
+        <p>我是yangenY，一名学生，专注于前端开发。</p>
+    </header>
+
+    <!-- 导航栏 -->
+    <nav>
+        <a href="#about">关于我</a>
+        <a href="#projects">我的项目</a>
+        <a href="#contact">联系我</a>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="content">
+        <!-- 关于我 -->
+        <section id="about" class="slide-in-left">
+            <h2>关于我</h2>
+            <p>你好！我是yangenY，一名学生，拥有1年的前端开发经验。我热爱摄影，并致力于成为前端高手。在这里，你可以了解更多关于我的工作和项目。</p>
+        </section>
+
+        <!-- 我的项目 -->
+        <section id="projects" class="slide-in-right">
+            <h2>我的项目</h2>
+            <div class="projects">
+                <div class="project-card">
+                    <h3>仿微信聊天工具</h3>
+                    <p>这是一个关于模仿微信的项目，使用了HTML、CSS、JavaScript等技术。</p>
+                </div>
+                <div class="project-card">
+                    <h3>项目 2</h3>
+                    <p>这是一个关于[项目描述]的项目，使用了[技术/工具]。</p>
+                </div>
+                <div class="project-card">
+                    <h3>项目 3</h3>
+                    <p>这是一个关于[项目描述]的项目，使用了[技术/工具]。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系我 -->
+        <section id="contact" class="slide-in-left">
+            <h2>联系我</h2>
+            <p>如果你有任何问题或合作意向，欢迎通过以下方式联系我：</p>
+            <p>邮箱: <a href="#">18819774413@163.com</a></p>
+            <p>社交媒体: <a href="https://www.douyin.com/user/MS4wLjABAAAAVQDhTaMH7Nm7KuA7g6c811IsYQZ-iBAbAWDzlH2ZlcB5j0aDd9pdHcgTSa3YNbr6?from_tab_name=main&is_search=0&list_name=follow&nt=0" target="_blank">tiktok</a> | <a href="https://github.com/yangenY" target="_blank">GitHub</a></p>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>&copy; 2025 yangenY. 保留所有权利。</p>
+    </footer>
+
+    <script>
+        // JavaScript 实现滚动动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.content section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('slide-in-left');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
